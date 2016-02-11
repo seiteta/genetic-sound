@@ -10,10 +10,11 @@ import numpy as np
 
 
 
-f = 50
-sample = 1600
+f = 5
+sample = 160
 phi = 50
 x = np.arange(sample)
 y = np.sin(f * x - phi)
+
 plt.plot(x, y)
 plt.show()
