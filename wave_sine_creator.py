@@ -18,3 +18,4 @@ y = np.sin(f * x - phi)
 
 plt.plot(x, y)
 plt.show()
+
