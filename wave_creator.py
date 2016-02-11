@@ -13,7 +13,7 @@ from scipy.io.wavfile import write
 # Generate a random array (44100 random samples between -1 and 1)
 data = np.random.uniform(-1,1,44100)
 
-# No idea what this line does...
+# Normalizing to 1/-1 before scaling (optional)
 scaled = np.int16(data/np.max(np.abs(data)) * 32767)
 
 # Write the .wav file
