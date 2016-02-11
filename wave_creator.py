@@ -17,6 +17,12 @@ data = np.random.uniform(-1,1,44100)
 scaled = np.int16(data/np.max(np.abs(data)) * 32767)
 
 
-def WriteSound (_filename, _soundArray):
+def WriteSound (filename, soundArray):
+    """
+        Takes a numpy array and save it as a wav sound file
+        Parameters:
+        filename => Name of the file (string)
+        soundArray => Array of the sound (numpy array)
+    """
     # Write the .wav file
-    write(_filename, 44100, _soundArray)
+    write(filename, 44100, soundArray)
