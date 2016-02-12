@@ -9,9 +9,9 @@ import numpy as np
 from scipy.io.wavfile import write
 
 
-def create_parameters():
+def create_random_parameters():
     '''
-        Return a dictionnary of random parameters
+        Create a dictionnary of random parameters
     '''
     parameters={}
     length = 300000
@@ -24,9 +24,13 @@ def create_parameters():
     parameters["duration"] = np.random.randint(0,length-start)
     return parameters
 
-def generate_wave(parameters):
+
+def create_wave(parameters):
     '''
-        Return a numpy array of a generated wave sine signal
+        Create a numpy array corresponding to a generated wave sine signal        
+
+        Parameter:
+        parameters => Wave sine parameters (dictionnary)
     '''
     length = parameters["length"]
     amplitude = parameters["amplitude"]
@@ -37,33 +41,38 @@ def generate_wave(parameters):
     
     empty_start = np.zeros(start)
     empty_end = np.zeros(length-duration-start)
-    signal_time = np.arange(duration)
-    signal = amplitude * np.sin((2 * np.pi *  frequency * signal_time) + phase)
+    signal = amplitude * np.sin((2 * np.pi * frequency * np.arange(duration)) + phase)
     
     return np.hstack((empty_start,signal,empty_end))
     
 
 def add_waves(num_waves,length):
     '''
-        Return the addition of several wave sine signal
+        Add several wave sine signals.
+        
+        Parameters:
+        num_waves => Number of added wave sines (integer)
+        length => Length of the signal
     '''
     sound = np.zeros(length)
     for i in range(num_waves):
-        sound = sound + generate_wave(create_parameters())
+        sound = sound + create_wave(create_random_parameters())
     return sound
-    
+
+
 def write_sound (filename, soundarray):
     """
-        Takes a numpy array and save it as a wav sound file
+        Save a numpy array as a .wav sound file
+
         Parameters:
         filename => Name of the file (string)
-        soundArray => Array of the sound (numpy array)
+        soundarray => Array of the sound (numpy array)
     """
     soundarray = np.int16(soundarray/np.max(np.abs(soundarray)) * 32767)
     write(filename, 44100, soundarray)
     
 
-sound = add_waves(10000,300000)
+sound = add_waves(1000,300000)
 
 write_sound("test.wav",sound)
 
