@@ -4,24 +4,30 @@ Created on Thu Feb 11 18:45:27 2016
 
 @author: Fred
 """
-
 import numpy as np
-from scipy.io.wavfile import write
-
+from scipy.io.wavfile import write,read
 
 def create_random_parameters():
     '''
         Create a dictionnary of random parameters
     '''
-    parameters={}
-    length = 300000
-    parameters["length"] = length
-    parameters["amplitude"] = (np.random.rand(1)-0.5)*2
-    parameters["frequency"] = np.random.rand(1)/5.0
-    parameters["phase"] = np.random.rand(1)*2*np.pi
-    start = np.random.randint(0,length)
-    parameters["start"] = start
-    parameters["duration"] = np.random.randint(0,length-start)
+    parameters = np.random.rand(5)
+    min_amplitude = 1
+    max_amplitude = 200 #TODO: use max(target_sound)/number_of_wave
+    # frequency range: from 20 000 Hz to 20 Hz
+    min_frequency = 1/20000.0
+    max_frequency = 1/20.0
+    min_phase = 0
+    max_phase = 2 * np.pi
+    min_start = 0
+    max_start = length
+    parameters[0] = (parameters[0] * (max_amplitude-min_amplitude)) + min_amplitude
+    parameters[1] = (parameters[1] * (max_frequency-min_frequency)) + min_frequency
+    parameters[2] = (parameters[2] * (max_phase-min_phase)) + min_phase
+    parameters[3] = int((parameters[3] * (max_start-min_start)) + min_start)
+    min_duration = 0
+    max_duration = length-parameters[3]  
+    parameters[4] = int((parameters[4] * (max_duration-min_duration)) + min_duration)
     return parameters
 
 
@@ -32,12 +38,11 @@ def create_wave(parameters):
         Parameter:
         parameters => Wave sine parameters (dictionnary)
     '''
-    length = parameters["length"]
-    amplitude = parameters["amplitude"]
-    frequency = parameters["frequency"]
-    phase = parameters["phase"]
-    start = parameters["start"]
-    duration = parameters["duration"]
+    amplitude = parameters[0]
+    frequency = parameters[1]
+    phase = parameters[2]
+    start = parameters[3]
+    duration = parameters[4]
     
     empty_start = np.zeros(start)
     empty_end = np.zeros(length-duration-start)
@@ -46,7 +51,7 @@ def create_wave(parameters):
     return np.hstack((empty_start,signal,empty_end))
     
 
-def add_waves(num_waves,length):
+def add_waves(num_waves):
     '''
         Add several wave sine signals.
         
@@ -72,8 +77,33 @@ def write_sound (filename, soundarray):
     write(filename, 44100, soundarray)
     
 
-sound = add_waves(1000,300000)
+def wave_reader(filename):
+    '''
+    Read a .wav file and return a numpy array.
+    '''    
+    data = read(filename)
+    return data[1]
 
-write_sound("test.wav",sound)
+def compute_loss(prediction, target):
+    n = len(prediction)
+    rmse = np.linalg.norm(prediction - target) / np.sqrt(n)
+    return rmse
+
+target_sound = wave_reader('baby.wav')
+length = len(target_sound)
+
+generated_sound = add_waves(10000)
+
+loss = compute_loss(generated_sound,target_sound)
+print loss
+
+write_sound("test.wav",generated_sound)
+
+
+
+
+
+
+
 
 
